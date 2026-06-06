@@ -1,0 +1,217 @@
+{
+  "skill_name": "lark-active-chat-digest",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "帮我总结最近1天飞书里成员数超过80、最近比较活跃、且没有免打扰的群，最多看10个群。重点看@所有人、高赞高回复、群主/管理员发言，以及风险/截止/上线/客户相关关键词。先不要发出去，给我飞书消息卡片JSON和一份预览。",
+      "expected_output": "应该使用 lark-active-chat-digest：读取 lark-shared；由于用户已明确最近1天、最多10群、成员数阈值80，不再询问这些选项；用 user 身份、--exclude-muted、ByActiveTimeDesc 获取群；成员数明确>80的群保留，成员数未知的群也保留并标注未知，只有成员数明确<=80的群排除；每个入选群单独提取多条关键消息，最多10条；@所有人的卡片链接前应有🚩；输出结论先行、带消息链接的预览和 interactive 卡片 JSON；不主动发送，但可在收尾询问是否要发送给自己。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "读取 lark-shared",
+          "description": "输出或执行计划中应体现开始前读取 ../lark-shared/SKILL.md 并遵守认证/权限规则。"
+        },
+        {
+          "name": "固定忽略免打扰群",
+          "description": "应使用或明确计划使用 --exclude-muted，且不询问是否忽略免打扰。"
+        },
+        {
+          "name": "卡片不自动发送",
+          "description": "除非用户明确要求发送且完成 dry-run 与确认，否则只输出预览和卡片 JSON。"
+        },
+        {
+          "name": "每群最多十条",
+          "description": "每个群的摘要条数不得超过 10 条，且应按群分别截断。"
+        },
+        {
+          "name": "@所有人链接前加🚩",
+          "description": "@所有人消息在预览或卡片链接前应加 🚩 标识。"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "把最近3天活跃大群的重点整理一下，最多5个群，每个群最多10条。人数边界按50人。忽略 ByteMall 可爱天使话题群。只关注@所有人、回复或点赞超过10、群主/管理员说的话，还有关键词：预算、HC、延期、客户投诉。整理成能发到飞书的卡片，但先别发送。",
+      "expected_output": "应该按最近3天、最多5群、成员数阈值50执行；忽略群名命中的 ByteMall 可爱天使话题群并在统计中报告白名单忽略数量；关键词以用户给出的预算/HC/延期/客户投诉为主；成员数明确>50和未知群保留，成员数明确<=50排除；每群应尽量输出多条高信号摘要，只有实际不足时才少于10条；给出可发送的飞书卡片 JSON，但不发送。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "读取 lark-shared",
+          "description": "输出或执行计划中应体现开始前读取 ../lark-shared/SKILL.md 并遵守认证/权限规则。"
+        },
+        {
+          "name": "固定忽略免打扰群",
+          "description": "应使用或明确计划使用 --exclude-muted，且不询问是否忽略免打扰。"
+        },
+        {
+          "name": "卡片不自动发送",
+          "description": "除非用户明确要求发送且完成 dry-run 与确认，否则只输出预览和卡片 JSON。"
+        },
+        {
+          "name": "每群最多十条",
+          "description": "每个群的摘要条数不得超过 10 条，且应按群分别截断。"
+        },
+        {
+          "name": "@所有人链接前加🚩",
+          "description": "@所有人消息在预览或卡片链接前应加 🚩 标识。"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "查一下这两天飞书群聊重点，发到我的个人文件传输助手。群太多的话最多20个，免打扰的不要管，最好每条能点回原消息。",
+      "expected_output": "应该识别时间范围不在固定选项内，在1天/3天/7天/15天中让用户选择或建议映射为最近3天并确认；用户已给最多20群，不需要再问群数量；如果未给成员数阈值，要让用户选择20/50/100/200或输入自定义数字；识别发送给自己是写操作：先生成摘要和卡片，再用 contact +get-user 定位本人 open_id，对 user-id 执行 bot dry-run，展示标题/目标用户/摘要群数/摘要条数，等待确认后才发送。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "读取 lark-shared",
+          "description": "输出或执行计划中应体现开始前读取 ../lark-shared/SKILL.md 并遵守认证/权限规则。"
+        },
+        {
+          "name": "固定忽略免打扰群",
+          "description": "应使用或明确计划使用 --exclude-muted，且不询问是否忽略免打扰。"
+        },
+        {
+          "name": "卡片不自动发送",
+          "description": "除非用户明确要求发送且完成 dry-run 与确认，否则只输出预览和卡片 JSON。"
+        },
+        {
+          "name": "每群最多十条",
+          "description": "每个群的摘要条数不得超过 10 条，且应按群分别截断。"
+        },
+        {
+          "name": "发送给自己必须 dry-run 后确认",
+          "description": "应先 contact +get-user 定位本人 open_id，再 bot +messages-send --user-id --dry-run，展示目标和摘要信息，等待用户确认后才发送。"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "帮我看看飞书最近活跃大群摘要，时间、群数量和人数边界我都还没想好。",
+      "expected_output": "应该先让用户同时选择时间范围1/3/7/15天、群聊数上限5/10/15/20、群人数边界20/50/100/200或自定义数字，而不是静默默认；说明这些选择会影响API调用量、输出长度和总结粒度。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "读取 lark-shared",
+          "description": "输出或执行计划中应体现开始前读取 ../lark-shared/SKILL.md 并遵守认证/权限规则。"
+        },
+        {
+          "name": "固定忽略免打扰群",
+          "description": "应使用或明确计划使用 --exclude-muted，且不询问是否忽略免打扰。"
+        },
+        {
+          "name": "卡片不自动发送",
+          "description": "除非用户明确要求发送且完成 dry-run 与确认，否则只输出预览和卡片 JSON。"
+        },
+        {
+          "name": "每群最多十条",
+          "description": "每个群的摘要条数不得超过 10 条，且应按群分别截断。"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "以后飞书活跃群摘要默认只看100人以上的群，并且永远忽略 ByteMall 可爱天使话题群和北京街舞社。帮我记住。",
+      "expected_output": "应该识别这是持久偏好：默认群人数边界100、自动忽略群白名单包含 ByteMall 可爱天使话题群和北京街舞社；写入 memory 而不是修改 SKILL.md；写入前检查是否已有相关 memory，写后更新 MEMORY.md 索引。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "读取 lark-shared",
+          "description": "输出或执行计划中应体现开始前读取 ../lark-shared/SKILL.md 并遵守认证/权限规则。"
+        },
+        {
+          "name": "固定忽略免打扰群",
+          "description": "应使用或明确计划使用 --exclude-muted，且不询问是否忽略免打扰。"
+        },
+        {
+          "name": "卡片不自动发送",
+          "description": "除非用户明确要求发送且完成 dry-run 与确认，否则只输出预览和卡片 JSON。"
+        },
+        {
+          "name": "每群最多十条",
+          "description": "每个群的摘要条数不得超过 10 条，且应按群分别截断。"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "把飞书活跃群摘要的默认关键词列表给我看看，我想把风险类增加‘降级’和‘事故’，业务类删除‘招聘’。",
+      "expected_output": "应该先展示当前默认关键词列表；用户已明确修改内容时，应更新 SKILL.md 的默认关键词集：风险类增加降级/事故，业务类删除招聘；关键词配置不写 memory；修改后做静态检查并汇报。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "读取 lark-shared",
+          "description": "输出或执行计划中应体现开始前读取 ../lark-shared/SKILL.md 并遵守认证/权限规则。"
+        },
+        {
+          "name": "固定忽略免打扰群",
+          "description": "应使用或明确计划使用 --exclude-muted，且不询问是否忽略免打扰。"
+        },
+        {
+          "name": "卡片不自动发送",
+          "description": "除非用户明确要求发送且完成 dry-run 与确认，否则只输出预览和卡片 JSON。"
+        },
+        {
+          "name": "每群最多十条",
+          "description": "每个群的摘要条数不得超过 10 条，且应按群分别截断。"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "prompt": "帮我总结最近15天的飞书活跃大群，最多15个群，人数边界设成200，成员数查不到的也先保留看看，最后发卡片给我自己。",
+      "expected_output": "应该按最近15天、最多15群、成员数阈值200执行；成员数未知保留并标注；成员数明确<=200排除；每群最多10条关键消息；@所有人消息链接前加🚩；由于用户要求发送给自己，需要先生成卡片、用 contact +get-user 定位本人 open_id、用 bot +messages-send --user-id 执行 dry-run，展示标题/目标用户/摘要群数/摘要条数并等待用户确认后再发送。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "读取 lark-shared",
+          "description": "输出或执行计划中应体现开始前读取 ../lark-shared/SKILL.md 并遵守认证/权限规则。"
+        },
+        {
+          "name": "固定忽略免打扰群",
+          "description": "应使用或明确计划使用 --exclude-muted，且不询问是否忽略免打扰。"
+        },
+        {
+          "name": "卡片不自动发送",
+          "description": "除非用户明确要求发送且完成 dry-run 与确认，否则只输出预览和卡片 JSON。"
+        },
+        {
+          "name": "每群最多十条",
+          "description": "每个群的摘要条数不得超过 10 条，且应按群分别截断。"
+        },
+        {
+          "name": "发送给自己必须 dry-run 后确认",
+          "description": "应先 contact +get-user 定位本人 open_id，再 bot +messages-send --user-id --dry-run，展示目标和摘要信息，等待用户确认后才发送。"
+        },
+        {
+          "name": "@所有人链接前加🚩",
+          "description": "@所有人消息在预览或卡片链接前应加 🚩 标识。"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "prompt": "总结最近7天最多10个活跃群，人数边界100，整理完问我是否要发给自己。",
+      "expected_output": "应该先生成预览和卡片 JSON，不自动发送；收尾时询问是否要把总结好的信息作为飞书卡片发送给自己。如果用户随后确认要发送，再进入 contact +get-user、dry-run、确认、发送流程。",
+      "files": [],
+      "assertions": [
+        {
+          "name": "读取 lark-shared",
+          "description": "输出或执行计划中应体现开始前读取 ../lark-shared/SKILL.md 并遵守认证/权限规则。"
+        },
+        {
+          "name": "固定忽略免打扰群",
+          "description": "应使用或明确计划使用 --exclude-muted，且不询问是否忽略免打扰。"
+        },
+        {
+          "name": "卡片不自动发送",
+          "description": "除非用户明确要求发送且完成 dry-run 与确认，否则只输出预览和卡片 JSON。"
+        },
+        {
+          "name": "每群最多十条",
+          "description": "每个群的摘要条数不得超过 10 条，且应按群分别截断。"
+        }
+      ]
+    }
+  ]
+}
